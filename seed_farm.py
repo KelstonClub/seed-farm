@@ -2,7 +2,9 @@
 # NB I know nothing about seeds or farms -- this is just
 # a rough sketch of how a farming simulation might work!
 #
+import os
 import csv
+import pickle
 import time
 
 class Seed:
@@ -66,7 +68,18 @@ class Farm:
             time.sleep(1)
 
 if __name__ == '__main__':
-    farm = Farm()
-    farm.plant("Turnip", 12)
-    farm.plant("Barley", 10)
-    farm.run()
+    SAVED_FILENAME = "farm.saved"
+    if os.path.exists(SAVED_FILENAME):
+        with open(SAVED_FILENAME, "rb") as f:
+            farm = pickle.loads(f.read())
+    else:
+        farm = Farm()
+        farm.plant("Turnip", 12)
+        farm.plant("Barley", 10)
+
+    try:
+        farm.run()
+    except KeyboardInterrupt:
+        with open(SAVED_FILENAME, "wb") as f:
+            f.write(pickle.dumps(farm))
+
